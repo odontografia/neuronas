@@ -1,0 +1,2 @@
+# neuronas
+Neuronas según estructura
