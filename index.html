@@ -1,17 +1,29 @@
 import React, { useState } from 'react';
-import { Eye, Zap, Network, Info, Activity, BookOpen, Scan } from 'lucide-react';
+import { Eye, Zap, Network, Info, Activity, BookOpen, Scan, X, Maximize2 } from 'lucide-react';
 
-// --- DATA STRUCTURE ---
+// --- DATA STRUCTURES ---
+
+const dendriteData = {
+  id: 'dendrite',
+  title: 'Dendritas',
+  latin: 'Processus Protoplasmicus',
+  // Placeholder for Dendrite Image
+  imageUrl: 'https://placehold.co/800x800/022c22/34d399?text=Render+3D:+Arbol+Dendritico&font=roboto',
+  description: 'Ramificaciones protoplasmáticas que actúan como antenas receptoras.',
+  note: 'Input Sináptico'
+};
+
 const neuronData = [
   {
     id: 'bipolar',
     title: 'Neurona Bipolar',
     latin: 'Neuron Bipolaris',
-    imageUrl: 'https://placehold.co/600x400/0f172a/38bdf8?text=3D+Render:+Bipolar+Neuron&font=roboto',
+    // Placeholder for Bipolar Image
+    imageUrl: 'https://placehold.co/1000x800/0f172a/38bdf8?text=Render+3D:+Neurona+Bipolar+(Retina)&font=roboto',
     icon: <Eye className="w-5 h-5" />,
     color: 'border-cyan-500/50 bg-cyan-950/30',
     accentColor: 'text-cyan-400',
-    glowColor: 'shadow-cyan-500/20',
+    baseColor: 'cyan',
     shape: 'Morfología fusiforme: 1 axón y 1 dendrita emergen de polos opuestos del soma.',
     location: 'Retina, Epitelio Olfatorio, Ganglio Vestibular.',
     function: 'Relé Sensorial de Alta Fidelidad: Transmite sentidos especiales afinando el contraste.',
@@ -20,11 +32,12 @@ const neuronData = [
     id: 'pseudounipolar',
     title: 'Seudounipolar',
     latin: 'Neuron Pseudounipolaris',
-    imageUrl: 'https://placehold.co/600x400/0f172a/f43f5e?text=3D+Render:+Pseudounipolar+Neuron&font=roboto',
+    // Placeholder for Pseudounipolar Image
+    imageUrl: 'https://placehold.co/1000x800/0f172a/f43f5e?text=Render+3D:+Neurona+Seudounipolar+(Ganglio)&font=roboto',
     icon: <Zap className="w-5 h-5" />,
     color: 'border-rose-500/50 bg-rose-950/30',
     accentColor: 'text-rose-400',
-    glowColor: 'shadow-rose-500/20',
+    baseColor: 'rose',
     shape: 'Forma de "T": Una sola prolongación se bifurca en una rama periférica y una central.',
     location: 'Ganglios de la Raíz Dorsal (GRD) y Ganglio del Trigémino.',
     function: 'Conducción Rápida: Bypass directo del soma para reflejos y sensibilidad táctil.',
@@ -34,11 +47,12 @@ const neuronData = [
     title: 'Multipolar',
     subtitle: '(La más abundante)',
     latin: 'Neuron Multipolaris',
-    imageUrl: 'https://placehold.co/600x400/0f172a/fbbf24?text=3D+Render:+Multipolar+Neuron&font=roboto',
+    // Placeholder for Multipolar Image
+    imageUrl: 'https://placehold.co/1000x800/0f172a/fbbf24?text=Render+3D:+Neurona+Multipolar+(Corteza)&font=roboto',
     icon: <Network className="w-5 h-5" />,
     color: 'border-amber-500/50 bg-amber-950/30',
     accentColor: 'text-amber-400',
-    glowColor: 'shadow-amber-500/20',
+    baseColor: 'amber',
     shape: 'Árbol dendrítico extenso y un único axón largo o corto.',
     location: 'Corteza Cerebral, Médula Espinal (Motoneuronas).',
     function: {
@@ -50,6 +64,7 @@ const neuronData = [
 
 export default function NeuronChart() {
   const [activeNode, setActiveNode] = useState<string | null>(null);
+  const [selectedImage, setSelectedImage] = useState<any | null>(null);
 
   return (
     <div className="min-h-screen bg-[#050505] text-slate-200 font-sans p-4 md:p-12 flex flex-col items-center selection:bg-cyan-500/30 selection:text-cyan-100 overflow-x-hidden">
@@ -60,19 +75,65 @@ export default function NeuronChart() {
           <div className="absolute bottom-0 right-0 w-[600px] h-[600px] bg-blue-900/10 rounded-full blur-[100px] opacity-30"></div>
       </div>
 
+      {/* LIGHTBOX / MICROSCOPE VIEW MODAL */}
+      {selectedImage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 animate-in fade-in duration-300">
+            <div className="relative w-full max-w-5xl aspect-video bg-black border border-white/20 rounded-lg overflow-hidden shadow-2xl flex flex-col">
+                
+                {/* HUD Header */}
+                <div className="absolute top-0 left-0 right-0 p-4 bg-gradient-to-b from-black/80 to-transparent flex justify-between items-start z-20">
+                    <div className="flex flex-col">
+                        <span className="text-xs font-mono text-cyan-400 uppercase tracking-widest">Bio-Scan Analysis</span>
+                        <h3 className="text-2xl font-light text-white">{selectedImage.title}</h3>
+                        <span className="text-[10px] text-slate-400 font-mono italic">{selectedImage.latin}</span>
+                    </div>
+                    <button 
+                        onClick={() => setSelectedImage(null)}
+                        className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors"
+                    >
+                        <X className="w-6 h-6" />
+                    </button>
+                </div>
+
+                {/* Main Image */}
+                <div className="flex-1 relative overflow-hidden group">
+                    <img 
+                        src={selectedImage.imageUrl} 
+                        alt={selectedImage.title} 
+                        className="w-full h-full object-contain"
+                    />
+                    {/* Scan Line Animation */}
+                    <div className="absolute top-0 left-0 w-full h-1 bg-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.5)] animate-[scan_4s_linear_infinite]"></div>
+                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/graphy.png')] opacity-10 mix-blend-overlay pointer-events-none"></div>
+                </div>
+
+                {/* HUD Footer */}
+                <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent z-20 flex justify-between items-end">
+                    <div className="text-[10px] font-mono text-slate-500 space-y-1">
+                        <div>ZOOM: 400x</div>
+                        <div>FILTER: PBR_RENDER</div>
+                    </div>
+                    <div className="text-xs text-white/80 max-w-md text-right font-light">
+                        {selectedImage.description || (typeof selectedImage.function === 'string' ? selectedImage.function : "Estructura compleja del sistema nervioso central.")}
+                    </div>
+                </div>
+            </div>
+        </div>
+      )}
+
       {/* HEADER SECTION - CLINICAL INTERFACE */}
       <header className="w-full max-w-6xl mb-16 relative z-10 border-b border-white/10 pb-8">
         <div className="flex flex-col md:flex-row justify-between items-end gap-6">
             <div className="space-y-2">
                 <div className="flex items-center gap-2 text-xs font-bold tracking-[0.2em] text-cyan-500 uppercase">
                     <Activity className="w-4 h-4 animate-pulse" />
-                    <span>Bio-Viz System v4.0</span>
+                    <span>Bio-Viz System v4.1</span>
                 </div>
                 <h1 className="text-5xl md:text-6xl font-light text-white tracking-tight">
                   Atlas Neuronal <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">3D</span>
                 </h1>
                 <p className="text-slate-400 max-w-xl text-lg font-light leading-relaxed">
-                  Visualización morfofuncional de alta fidelidad. Interfaz clínica de referencia.
+                  Visualización morfofuncional de alta fidelidad. Haz clic en las estructuras para ampliarlas.
                 </p>
             </div>
             <div className="flex flex-col items-end text-right space-y-1 opacity-70">
@@ -84,41 +145,43 @@ export default function NeuronChart() {
       </header>
 
       {/* FOUNDATIONAL NOTE - GLASS PANEL */}
-      <div className="w-full max-w-4xl mb-20 relative z-10 group">
+      <div className="w-full max-w-4xl mb-20 relative z-10 group cursor-pointer" onClick={() => setSelectedImage(dendriteData)}>
         {/* Glow effect behind */}
         <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500/30 to-teal-500/30 rounded-lg blur opacity-30 group-hover:opacity-60 transition duration-1000"></div>
         
-        <div className="relative bg-[#0a0a0a]/90 backdrop-blur-xl border border-white/10 rounded-lg p-6 flex flex-col md:flex-row gap-8 items-center shadow-2xl">
+        <div className="relative bg-[#0a0a0a]/90 backdrop-blur-xl border border-white/10 rounded-lg p-6 flex flex-col md:flex-row gap-8 items-center shadow-2xl hover:border-emerald-500/30 transition-colors">
             {/* Scan line effect */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden rounded-lg pointer-events-none opacity-20">
                 <div className="w-full h-1 bg-white/20 absolute top-0 animate-[scan_3s_ease-in-out_infinite]"></div>
             </div>
 
-            <div className="w-28 h-28 shrink-0 rounded-full border border-emerald-500/30 p-1 relative">
+            <div className="w-32 h-32 shrink-0 rounded-full border border-emerald-500/30 p-1 relative group-hover:scale-105 transition-transform duration-500">
                 <div className="w-full h-full rounded-full overflow-hidden bg-black relative">
                     <img 
-                        src="https://placehold.co/300x300/022c22/34d399?text=Dendrites+3D&font=roboto" 
-                        alt="Dendritas 3D" 
-                        className="w-full h-full object-cover opacity-80"
+                        src={dendriteData.imageUrl} 
+                        alt={dendriteData.title} 
+                        className="w-full h-full object-cover opacity-90"
                     />
-                    {/* Overlay grid */}
-                    <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/graphy.png')] opacity-30 mix-blend-overlay"></div>
+                    {/* Overlay icon */}
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Maximize2 className="w-6 h-6 text-white" />
+                    </div>
                 </div>
             </div>
             
             <div className="flex-1 space-y-3">
                 <div className="flex items-center gap-3 border-b border-white/5 pb-2">
-                    <h2 className="text-2xl font-medium text-white tracking-wide">Estructura Base: <span className="font-bold text-emerald-400">Dendritas</span></h2>
+                    <h2 className="text-2xl font-medium text-white tracking-wide">Estructura Base: <span className="font-bold text-emerald-400">{dendriteData.title}</span></h2>
                     <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/50 border border-emerald-500/30 px-2 py-1 rounded uppercase tracking-wider shadow-[0_0_10px_-3px_rgba(52,211,153,0.5)]">
                         Componente
                     </span>
                 </div>
                 <p className="text-slate-300 leading-relaxed font-light">
-                    <strong className="text-emerald-300 font-medium">Input Sináptico:</strong> Ramificaciones protoplasmáticas que actúan como antenas receptoras, integrando señales electroquímicas hacia el soma.
+                    <strong className="text-emerald-300 font-medium">{dendriteData.note}:</strong> {dendriteData.description}
                 </p>
                 <div className="flex items-center gap-2 text-emerald-500/80 text-xs font-mono mt-2">
                     <Info className="w-3 h-3" />
-                    <span>NOTA: NO CLASIFICAR COMO TIPO CELULAR INDEPENDIENTE.</span>
+                    <span>NOTA: CLIC PARA EXAMINAR ESTRUCTURA 3D.</span>
                 </div>
             </div>
         </div>
@@ -137,18 +200,19 @@ export default function NeuronChart() {
               {/* CARD CONTAINER */}
               <div 
                 className={`
-                    relative bg-[#0f0f10] border rounded-xl overflow-hidden transition-all duration-500 ease-out transform-gpu
+                    relative bg-[#0f0f10] border rounded-xl overflow-hidden transition-all duration-500 ease-out transform-gpu cursor-pointer
                     ${activeNode === neuron.id 
-                        ? `border-${neuron.accentColor.split('-')[1]}-500/50 scale-105 shadow-[0_0_50px_-10px_rgba(0,0,0,0.7)] z-20 translate-y-[-10px]` 
+                        ? `border-${neuron.baseColor}-500/50 scale-105 shadow-[0_0_50px_-10px_rgba(0,0,0,0.7)] z-20 translate-y-[-10px]` 
                         : 'border-white/10 hover:border-white/20 shadow-xl'
                     }
                 `}
+                onClick={() => setSelectedImage(neuron)}
               >
                 {/* 3D VIEWPORT SIMULATION */}
                 <div className="relative aspect-[4/3] bg-black overflow-hidden group-hover:brightness-110 transition-[filter] duration-500">
                    {/* Rim Light Effect */}
                    <div className={`absolute inset-0 shadow-[inset_0_0_60px_-15px_rgba(0,0,0,1)] z-10 pointer-events-none`}></div>
-                   <div className={`absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-${neuron.accentColor.split('-')[1]}-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10`}></div>
+                   <div className={`absolute top-0 left-0 right-0 h-1/3 bg-gradient-to-b from-${neuron.baseColor}-500/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-10`}></div>
 
                    {/* Image */}
                    <img 
@@ -159,11 +223,9 @@ export default function NeuronChart() {
                    
                    {/* HUD Overlay */}
                    <div className="absolute top-3 right-3 flex flex-col gap-1 items-end z-20 opacity-60">
-                     <div className="flex items-center gap-1 text-[9px] text-white font-mono bg-black/50 px-1 rounded backdrop-blur">
-                        <Scan className="w-3 h-3" /> LIVE VIEW
+                     <div className="flex items-center gap-1 text-[9px] text-white font-mono bg-black/50 px-1 rounded backdrop-blur border border-white/10">
+                        <Scan className="w-3 h-3" /> CLICK TO EXPAND
                      </div>
-                     <div className="w-16 h-[1px] bg-white/50"></div>
-                     <div className="w-1 h-1 bg-white rounded-full"></div>
                    </div>
 
                    <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black via-black/80 to-transparent z-20">
@@ -184,7 +246,7 @@ export default function NeuronChart() {
                                 </h3>
                                 {neuron.subtitle && <p className="text-[10px] text-slate-500 font-mono uppercase tracking-wider mt-1">{neuron.subtitle}</p>}
                             </div>
-                            <div className={`p-2 rounded bg-white/5 border border-white/10 text-slate-400 group-hover:text-white group-hover:border-${neuron.accentColor.split('-')[1]}-500/50 transition-all duration-300`}>
+                            <div className={`p-2 rounded bg-white/5 border border-white/10 text-slate-400 group-hover:text-white group-hover:border-${neuron.baseColor}-500/50 transition-all duration-300`}>
                                 {neuron.icon}
                             </div>
                         </div>
@@ -194,7 +256,7 @@ export default function NeuronChart() {
                             {/* Morfología */}
                             <div className="group/item">
                                 <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1 flex items-center gap-2">
-                                    <span className={`w-1 h-1 rounded-full bg-${neuron.accentColor.split('-')[1]}-500`}></span>
+                                    <span className={`w-1 h-1 rounded-full bg-${neuron.baseColor}-500`}></span>
                                     Morfología
                                 </h4>
                                 <p className="text-sm text-slate-300 leading-relaxed font-light pl-3 border-l border-white/10 group-hover/item:border-white/30 transition-colors">
@@ -205,7 +267,7 @@ export default function NeuronChart() {
                             {/* Ubicación */}
                             <div className="group/item">
                                 <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1 flex items-center gap-2">
-                                    <span className={`w-1 h-1 rounded-full bg-${neuron.accentColor.split('-')[1]}-500`}></span>
+                                    <span className={`w-1 h-1 rounded-full bg-${neuron.baseColor}-500`}></span>
                                     Localización
                                 </h4>
                                 <p className="text-sm text-slate-300 leading-relaxed font-light pl-3 border-l border-white/10 group-hover/item:border-white/30 transition-colors">
@@ -214,8 +276,8 @@ export default function NeuronChart() {
                             </div>
 
                             {/* Función */}
-                            <div className={`mt-4 p-3 rounded bg-white/5 border border-white/10 relative overflow-hidden group-hover:border-${neuron.accentColor.split('-')[1]}-500/30 transition-colors duration-300`}>
-                                <div className={`absolute left-0 top-0 bottom-0 w-1 bg-${neuron.accentColor.split('-')[1]}-500`}></div>
+                            <div className={`mt-4 p-3 rounded bg-white/5 border border-white/10 relative overflow-hidden group-hover:border-${neuron.baseColor}-500/30 transition-colors duration-300`}>
+                                <div className={`absolute left-0 top-0 bottom-0 w-1 bg-${neuron.baseColor}-500`}></div>
                                 <h4 className="text-[10px] font-bold text-white uppercase tracking-widest mb-2 flex items-center gap-2">
                                     <Activity className="w-3 h-3" /> Función
                                 </h4>
@@ -246,15 +308,13 @@ export default function NeuronChart() {
 
       <footer className="mt-24 text-slate-600 text-[10px] font-mono tracking-widest uppercase text-center w-full max-w-xl flex flex-col items-center gap-2">
         <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-slate-800 to-transparent"></div>
-        <span>System Status: Online • Neuro-Atlas Module 1.2</span>
+        <span>System Status: Online • Neuro-Atlas Module 1.3</span>
       </footer>
 
       {/* CSS Animation for Scan Line */}
       <style>{`
         @keyframes scan {
           0% { top: -10%; opacity: 0; }
-          10% { opacity: 1; }
-          90% { opacity: 1; }
           100% { top: 110%; opacity: 0; }
         }
       `}</style>
